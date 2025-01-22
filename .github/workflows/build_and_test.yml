@@ -98,11 +98,11 @@ jobs:
           ignore-pattern: |
             \.pb\.go$
             \_string\.go$
-
-      #          # A url that the html report will be accessible at, once your
-      #          # workflow uploads it.  Used in the pull request comment.
-      #          report-url: https://artifacts.example.com/go-coverage/${{ github.ref_name}}.html
-
+          
+          # A url that the html report will be accessible at, once your
+          # workflow uploads it.  Used in the pull request comment.
+          report-url: https://artifacts.example.com/go-coverage/${{ github.ref_name}}.html
+      
       - name: 'Precompute thresholds'
         id: threshold_bins
         run: |
@@ -122,14 +122,13 @@ jobs:
           label: Go Coverage
           message: ${{ steps.coverage.outputs.coverage-pct-1dp }}%
           color: >
-            ${{ int(steps.coverage.outputs.coverage-pct-1dp) < int(env.COV_THRESHOLD0) && 'red' ||
-               int(steps.coverage.outputs.coverage-pct-1dp) < int(env.COV_THRESHOLD1) && 'orange' ||
-               int(steps.coverage.outputs.coverage-pct-1dp) < int(env.COV_THRESHOLD2) && 'yellow' ||
-               int(steps.coverage.outputs.coverage-pct-1dp) < int(env.COV_THRESHOLD3) && 'yellowgreen' ||
-               int(steps.coverage.outputs.coverage-pct-1dp) < int(env.COV_THRESHOLD4) && 'lightgreen' ||
-               'green' }}
-      
-      
+            ${{steps.coverage.outputs.coverage-pct-1dp}} < ${{env.COV_THRESHOLD0}} && 'red' ||
+            ${{steps.coverage.outputs.coverage-pct-1dp}} < ${{env.COV_THRESHOLD_BIN1}} && 'orange' ||
+            ${{steps.coverage.outputs.coverage-pct-1dp}} < ${{env.COV_THRESHOLD_BIN2}} && 'yellow' ||
+            ${{steps.coverage.outputs.coverage-pct-1dp}} < ${{env.COV_THRESHOLD_BIN3}} && 'yellowgreen' ||
+            ${{steps.coverage.outputs.coverage-pct-1dp}} < ${{env.COV_THRESHOLD_BIN4}} && 'lightgreen' ||
+            'green' }}
+
 
       - name: Generate coverage tree map
         run: |
