@@ -146,7 +146,8 @@ jobs:
 
   # Single deploy job since we're just deploying
   deploy-page:
-    name: "Deploy Coverage HTML report"
+    name: "Coverage report job"
+    needs: coverage
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
