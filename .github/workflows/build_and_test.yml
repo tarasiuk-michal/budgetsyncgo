@@ -22,7 +22,7 @@ jobs:
     
     - name: 'Clean temp directory'
       run: rm -rf *
-      working-directory: ./temp
+      working-directory: ~/temp
 
     - name: 'Set up Go'
       uses: actions/setup-go@v5.3.0
