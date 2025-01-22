@@ -14,7 +14,7 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -99,9 +99,9 @@ jobs:
             \.pb\.go$
             \_string\.go$
           
-          # A url that the html report will be accessible at, once your
-          # workflow uploads it.  Used in the pull request comment.
-          report-url: https://artifacts.example.com/go-coverage/${{ github.ref_name}}.html
+      #          # A url that the html report will be accessible at, once your
+      #          # workflow uploads it.  Used in the pull request comment.
+      #          report-url: https://artifacts.example.com/go-coverage/${{ github.ref_name}}.html
       
       - name: 'Precompute thresholds'
         id: threshold_bins
