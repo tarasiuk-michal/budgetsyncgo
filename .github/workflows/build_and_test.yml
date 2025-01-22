@@ -122,13 +122,14 @@ jobs:
           label: Go Coverage
           message: ${{ steps.coverage.outputs.coverage-pct-1dp }}%
           color: >
-            ${{ (steps.coverage.outputs.coverage-pct-1dp | int) < (env.COV_THRESHOLD0 | int) && 'red' ||
-            (steps.coverage.outputs.coverage-pct-1dp | int) < (env.COV_THRESHOLD_BIN1 | int) && 'orange' ||
-            (steps.coverage.outputs.coverage-pct-1dp | int) < (env.COV_THRESHOLD_BIN2 | int) && 'yellow' ||
-            (steps.coverage.outputs.coverage-pct-1dp | int) < (env.COV_THRESHOLD_BIN3 | int) && 'yellowgreen' ||
-            (steps.coverage.outputs.coverage-pct-1dp | int) < (env.COV_THRESHOLD_BIN4 | int) && 'lightgreen' ||
-            'green' }}
-
+            ${{ int(steps.coverage.outputs.coverage-pct-1dp) < int(env.COV_THRESHOLD0) && 'red' ||
+               int(steps.coverage.outputs.coverage-pct-1dp) < int(env.COV_THRESHOLD1) && 'orange' ||
+               int(steps.coverage.outputs.coverage-pct-1dp) < int(env.COV_THRESHOLD2) && 'yellow' ||
+               int(steps.coverage.outputs.coverage-pct-1dp) < int(env.COV_THRESHOLD3) && 'yellowgreen' ||
+               int(steps.coverage.outputs.coverage-pct-1dp) < int(env.COV_THRESHOLD4) && 'lightgreen' ||
+               'green' }}
+      
+      
 
       - name: Generate coverage tree map
         run: |
