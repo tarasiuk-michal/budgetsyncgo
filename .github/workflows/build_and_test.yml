@@ -1,0 +1,166 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+env:
+  COV_THRESHOLD0: 80
+
+name: Build and test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master" ]
+  pull_request:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  qodana:
+    name: 'Qodana job'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4.2.2
+        with:
+          token: ${{secrets.PAT_MIN_CHECKOUT}}
+          ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
+          fetch-depth: 0  # a full history is required for pull request analysis
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@v2024.3
+        with:
+          pr-mode: false
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_86051879 }}
+          QODANA_ENDPOINT: 'https://qodana.cloud'
+
+  build:
+    name: 'Build job'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4.2.2
+        with:
+          token: ${{secrets.PAT_MIN_CHECKOUT}}
+          ref: ${{ github.event.pull_request.head.sha }}
+
+        #    - name: 'Clean temp directory'
+        #      run: rm -rf *
+        #      working-directory: ~/temp
+
+      - name: 'Set up Go'
+        uses: actions/setup-go@v5.3.0
+        with:
+          go-version: '1.23'
+
+      - name: 'Build'
+        run: go build -v ./...
+
+  test:
+    name: 'Tests and coverage job'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4.2.2
+
+      - name: 'Test'
+        run: go test -v ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./... -shuffle=on -timeout=30s
+
+  coverage:
+    name: 'Coverage job'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4.2.2
+        with:
+          # default fetch-depth is insufficent to find previous coverage notes
+          fetch-depth: 10
+
+      - name: 'Calculate coverage'
+        uses: gwatts/go-coverage-action@v2
+        id: coverage
+        with:
+          # Optional coverage threshold
+          # use fail-coverage to determine what should happen below this threshold
+          coverage-threshold: ${{env.COV_THRESHOLD0}}
+          
+          # collect coverage for all packages beyond the one under test
+          cover-pkg: ./...
+          
+          # Ignore code-generated files when calculating coverage totals
+          ignore-pattern: |
+            \.pb\.go$
+            \_string\.go$
+          
+          # A url that the html report will be accessible at, once your
+          # workflow uploads it.  Used in the pull request comment.
+          report-url: https://artifacts.example.com/go-coverage/${{ github.ref_name}}.html
+      
+      - name: 'Precompute thresholds'
+        id: threshold_bins
+        run: |
+          echo "COV_THRESHOLD1=$(( $COV_THRESHOLD0 + (100 - $COV_THRESHOLD0) / 5 ))" >> $GITHUB_ENV
+          echo "COV_THRESHOLD2=$(( $COV_THRESHOLD0 + (100 - $COV_THRESHOLD0) * 2 / 5 ))" >> $GITHUB_ENV
+          echo "COV_THRESHOLD3=$(( $COV_THRESHOLD0 + (100 - $COV_THRESHOLD0) * 3 / 5 ))" >> $GITHUB_ENV
+          echo "COV_THRESHOLD4=$(( $COV_THRESHOLD0 + (100 - $COV_THRESHOLD0) * 4 / 5 ))" >> $GITHUB_ENV
+
+
+      - name: Update coverage badge
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        if: github.ref_name == 'main'
+        with:
+          auth: ${{ secrets.COVERAGE_GIST_SECRET }}
+          gistID: 788ds7a07299ab2728a33
+          filename: coverage.json
+          label: Go Coverage
+          message: ${{ steps.coverage.outputs.coverage-pct-1dp }}%
+          color: >
+            ${{steps.coverage.outputs.coverage-pct-1dp}} < ${{env.COV_THRESHOLD0}} && 'red' ||
+            ${{steps.coverage.outputs.coverage-pct-1dp}} < ${{env.COV_THRESHOLD_BIN1}} && 'orange' ||
+            ${{steps.coverage.outputs.coverage-pct-1dp}} < ${{env.COV_THRESHOLD_BIN2}} && 'yellow' ||
+            ${{steps.coverage.outputs.coverage-pct-1dp}} < ${{env.COV_THRESHOLD_BIN3}} && 'yellowgreen' ||
+            ${{steps.coverage.outputs.coverage-pct-1dp}} < ${{env.COV_THRESHOLD_BIN4}} && 'lightgreen' ||
+            'green' }}
+
+
+      - name: Generate coverage tree map
+        run: |
+          go run github.com/nikolaydubina/go-cover-treemap@latest \
+               -coverprofile ${{ steps.coverage.outputs.gocov-agg-pathname }} \
+               -only-folders=true >/tmp/treemap.svg
+
+      - name: 'Check test coverage'
+        uses: vladopajic/go-test-coverage@v2
+        with:
+          config: ./.testcoverage.yml
+
+      - name: 'Coverage HTML report'
+        run: go tool cover -html=cover.out -o=cover.html
+
+  # Single deploy job since we're just deploying
+  deploy-page:
+    name: "Deploy Coverage HTML report"
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: 'cover.html'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
