@@ -102,6 +102,8 @@ jobs:
           ignore-pattern: |
             \.pb\.go$
             \_string\.go$
+            main\.go$
+            ^config/
           token: ${{ secrets.GITHUB_TOKEN }} # Added token for coverage action
           
       #          # A url that the html report will be accessible at, once your
