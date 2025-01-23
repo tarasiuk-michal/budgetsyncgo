@@ -105,11 +105,11 @@ jobs:
             \_string\.go$
             main\.go$
             ^config/
-          
+
       #          # A url that the html report will be accessible at, once your
       #          # workflow uploads it.  Used in the pull request comment.
       #          report-url: https://artifacts.example.com/go-coverage/${{ github.ref_name}}.html
-      
+
       - name: 'Precompute thresholds'
         id: threshold_bins
         run: |
@@ -151,23 +151,23 @@ jobs:
   #      - name: 'Coverage HTML report'
   #        run: go tool cover -html=cover.out -o=cover.html
 
-  # Single deploy job since we're just deploying
-  deploy-page:
-    name: "Coverage report job"
-    needs: coverage
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4.2.2
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'cover.html'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+#  # Single deploy job since we're just deploying
+#  deploy-page:
+#    name: "Coverage report job"
+#    needs: coverage
+#    environment:
+#      name: github-pages
+#      url: ${{ steps.deployment.outputs.page_url }}
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4.2.2
+#      - name: Setup Pages
+#        uses: actions/configure-pages@v5
+#      - name: Upload artifact
+#        uses: actions/upload-pages-artifact@v3
+#        with:
+#          path: 'cover.html'
+#      - name: Deploy to GitHub Pages
+#        id: deployment
+#        uses: actions/deploy-pages@v4
