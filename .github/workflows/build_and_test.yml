@@ -92,6 +92,8 @@ jobs:
       - name: 'Calculate coverage'
         uses: gwatts/go-coverage-action@v2
         id: coverage
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           # Optional coverage threshold
           # use fail-coverage to determine what should happen below this threshold
