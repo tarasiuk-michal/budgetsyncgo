@@ -6,11 +6,11 @@
 # unit tests and integration tests separately, you can combine all those
 # profiles into one. In this case, the profile should have a comma-separated list
 # of profile files, e.g., 'cover_unit.out,cover_integration.out'.
-profile: cover.out
+profile: 'cover.out'
 
 # (optional; but recommended to set)
 # When specified reported file paths will not contain local prefix in the output.
-local-prefix: "github.com/tarasiuk-michal/budgetsyncgo/"
+#local-prefix: "github.com/tarasiuk-michal/budgetsyncgo/"
 
 # Holds coverage thresholds percentages, values should be in range [0-100].
 threshold:
