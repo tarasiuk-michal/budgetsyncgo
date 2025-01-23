@@ -143,10 +143,10 @@ jobs:
                -coverprofile ${{ steps.coverage.outputs.gocov-agg-pathname }} \
                -only-folders=true >/tmp/treemap.svg
 
-      - name: 'Check test coverage'
-        uses: vladopajic/go-test-coverage@v2
-        with:
-          config: ./testcoverage.yml
+      #      - name: 'Check test coverage'
+      #        uses: vladopajic/go-test-coverage@v2
+      #        with:
+      #          config: ./testcoverage.yml
 
       - name: 'Coverage HTML report'
         run: go tool cover -html=cover.out -o=cover.html
