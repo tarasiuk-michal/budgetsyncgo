@@ -13,12 +13,12 @@ on:
   pull_request:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-#permissions:
-#  contents: write
-#  pull-requests: write
-#  checks: write
-#  pages: write
-#  id-token: write
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+  pages: write
+  id-token: write
 
 jobs:
   qodana:
@@ -32,7 +32,7 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v4.2.2
         with:
-          token: ${{secrets.PAT_MIN_CHECKOUT}}
+          #          token: ${{secrets.PAT_MIN_CHECKOUT}}
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           fetch-depth: 0  # a full history is required for pull request analysis
       - name: 'Qodana Scan'
@@ -50,7 +50,7 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v4.2.2
         with:
-          token: ${{secrets.PAT_MIN_CHECKOUT}}
+          #          token: ${{secrets.PAT_MIN_CHECKOUT}}
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           fetch-depth: 0  # a full history is required for pull request analysis
         #    - name: 'Clean temp directory'
@@ -72,7 +72,7 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v4.2.2
         with:
-          token: ${{secrets.PAT_MIN_CHECKOUT}}
+          #          token: ${{secrets.PAT_MIN_CHECKOUT}}
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           fetch-depth: 0  # a full history is required for pull request analysis
       - name: 'Test'
@@ -85,7 +85,7 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v4.2.2
         with:
-          token: ${{secrets.PAT_MIN_CHECKOUT}}
+          #          token: ${{secrets.PAT_MIN_CHECKOUT}}
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           fetch-depth: 0  # a full history is required for pull request analysis
 
@@ -93,7 +93,7 @@ jobs:
         uses: gwatts/go-coverage-action@v2
         id: coverage
         with:
-          token: ${{ secrets.PAT_REPO_SU }} # Added token for coverage action
+          #          token: ${{ secrets.PAT_REPO_SU }} # Added token for coverage action
           # Optional coverage threshold
           # use fail-coverage to determine what should happen below this threshold
           coverage-threshold: ${{env.COV_THRESHOLD0}}
