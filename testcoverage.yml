@@ -44,7 +44,7 @@ exclude:
   # Exclude files or packages matching their paths
   paths:
     - \.pb\.go$    # excludes all protobuf generated files
-#    - ^pkg/bar     # exclude package `pkg/bar`
+    - ^pkg/config     # exclude package `pkg/config`
 
 # File name of go-test-coverage breakdown file, which can be used to
 # analyze coverage difference.
