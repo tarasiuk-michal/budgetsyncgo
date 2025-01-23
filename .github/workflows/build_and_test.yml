@@ -93,7 +93,7 @@ jobs:
         uses: gwatts/go-coverage-action@v2
         id: coverage
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_REPO_SU }}
         with:
           # Optional coverage threshold
           # use fail-coverage to determine what should happen below this threshold
@@ -106,7 +106,7 @@ jobs:
             \_string\.go$
             main\.go$
             ^config/
-          token: ${{ secrets.GITHUB_TOKEN }} # Added token for coverage action
+          token: ${{ secrets.PAT_REPO_SU }} # Added token for coverage action
           
       #          # A url that the html report will be accessible at, once your
       #          # workflow uploads it.  Used in the pull request comment.
