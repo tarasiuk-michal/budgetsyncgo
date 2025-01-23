@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
+	"log"
 	"testing"
 )
 
@@ -12,7 +13,12 @@ func TestFetchTransactions(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to open in-memory database: %v", err)
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			log.Panic(err)
+		}
+	}(db)
 
 	// Create mock table and seed data
 	setupTestDatabase(db, t)
@@ -64,15 +70,27 @@ func TestNewSqlite3Handler(t *testing.T) {
 }
 
 func setupTestDatabase(db *sql.DB, t *testing.T) {
-	// Create mock table
-	_, err := db.Exec(CreateTableQuery)
+	// Create mock categories table
+	_, err := db.Exec(CreateCategoriesTableQuery)
 	if err != nil {
-		t.Fatalf("failed to create mock table: %v", err)
+		t.Fatalf("failed to create mock categories table: %v", err)
 	}
 
-	// Insert data
-	_, err = db.Exec(InsertDataQuery)
+	// Create mock transactions table
+	_, err = db.Exec(CreateTransactionsTableQuery)
 	if err != nil {
-		t.Fatalf("failed to insert mock data: %v", err)
+		t.Fatalf("failed to create mock transactions table: %v", err)
+	}
+
+	// Insert mock categories data
+	_, err = db.Exec(InsertCategoriesDataQuery)
+	if err != nil {
+		t.Fatalf("failed to insert mock categories data: %v", err)
+	}
+
+	// Insert mock transactions data
+	_, err = db.Exec(InsertTransactionsDataQuery)
+	if err != nil {
+		t.Fatalf("failed to insert mock transactions data: %v", err)
 	}
 }

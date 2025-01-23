@@ -5,23 +5,39 @@ import (
 	"time"
 )
 
-// CreateTableQuery Mock table creation query
-const CreateTableQuery = `
+// CreateTransactionsTableQuery Mock table creation query
+const CreateTransactionsTableQuery = `
 CREATE TABLE transactions (
-	id INTEGER PRIMARY KEY,
-	description TEXT,
+	transaction_pk INTEGER PRIMARY KEY,
+	name TEXT,
 	amount REAL,
-	category TEXT,
-	date TEXT
+	category_fk INTEGER,
+	FOREIGN KEY (category_fk) REFERENCES categories(category_pk),
+	date_created TEXT
 )`
 
-// InsertDataQuery Mock table data insertion query
-const InsertDataQuery = `
-INSERT INTO transactions (id, description, amount, category, date) VALUES
-(1, 'Groceries', 50.0, 'Food', '2023-09-20'),
-(2, 'Rent', 500.0, 'Housing', '2023-10-01'),
-(3, 'Salary', 2000.0, 'Income', '2023-10-05'),
-(4, 'Thing', 300.0, 'Other', '2020-10-05 12:00:00')`
+// CreateCategoriesTableQuery Mock table creation query
+const CreateCategoriesTableQuery = `
+CREATE TABLE categories (
+	category_pk INTEGER PRIMARY KEY,
+	name TEXT
+)`
+
+// InsertTransactionsDataQuery Mock table data insertion query
+const InsertTransactionsDataQuery = `
+INSERT INTO transactions (transaction_pk, name, amount, category_fk, date_created) VALUES
+(1, 'Groceries', 50.0, 11, '2023-09-20'),
+(2, 'Rent', 500.0, 22, '2023-10-01'),
+(3, 'Salary', 2000.0, 33, '2023-10-05'),
+(4, 'Thing', 300.0, 44, '2020-10-05 12:00:00')`
+
+// InsertCategoriesDataQuery Mock table data insertion query
+const InsertCategoriesDataQuery = `
+INSERT INTO categories (category_pk, name) VALUES
+(11, 'Food'),
+(22, 'Housing'),
+(33, 'Income'),
+(44, 'Other')`
 
 // FetchTransactionsTestCase Structure to hold each test case for FetchTransactions
 type FetchTransactionsTestCase struct {

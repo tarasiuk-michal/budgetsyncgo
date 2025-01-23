@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	fetchTransactionsQuery = "SELECT id, description, amount, category, date FROM transactions WHERE date >= ?"
+	//fetchTransactionsQuery = "SELECT id, description, amount, category, date FROM transactions WHERE date >= ?"
+	fetchTransactionsQuery = "SELECT t.transaction_pk, t.name, t.amount, c.name AS category_name, t.date_created FROM transactions t JOIN categories c ON t.category_fk = c.category_pk WHERE t.date_created >= ?"
 )
 
 type Sqlite3Handler struct {
