@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="TEST ALL" type="GoTestRunConfiguration" factoryName="Go Test"
+                   focusToolWindowBeforeRun="true">
+        <module name="budgetsyncgo"/>
+        <working_directory value="$PROJECT_DIR$"/>
+        <parameters value=" -v ./... -shuffle=on -timeout=30s"/>
+        <kind value="DIRECTORY"/>
+        <package value="budgetsyncgo/..."/>
+        <directory value="$PROJECT_DIR$"/>
+        <filePath value="$PROJECT_DIR$/db/sqlite3_handler_test.go"/>
+        <output_directory value="$PROJECT_DIR$"/>
+        <framework value="gotest"/>
+        <method v="2"/>
+    </configuration>
+</component>

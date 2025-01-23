@@ -12,7 +12,6 @@ CREATE TABLE transactions (
 	name TEXT,
 	amount REAL,
 	category_fk INTEGER,
-	FOREIGN KEY (category_fk) REFERENCES categories(category_pk),
 	date_created TEXT
 )`
 

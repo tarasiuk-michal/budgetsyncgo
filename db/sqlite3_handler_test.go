@@ -70,6 +70,7 @@ func TestNewSqlite3Handler(t *testing.T) {
 }
 
 func setupTestDatabase(db *sql.DB, t *testing.T) {
+
 	// Create mock categories table
 	_, err := db.Exec(CreateCategoriesTableQuery)
 	if err != nil {
