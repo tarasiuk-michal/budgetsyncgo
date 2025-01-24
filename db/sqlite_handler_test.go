@@ -24,7 +24,7 @@ func TestFetchTransactions(t *testing.T) {
 	// Create mock table and seed data
 	setupTestDatabase(db, t)
 
-	handler := &Sqlite3Handler{db: db}
+	handler := &SqliteHandler{db: db}
 
 	for _, tc := range FetchTransactionsTestCases {
 		t.Run(tc.Name, func(t *testing.T) {
@@ -47,11 +47,11 @@ func TestFetchTransactions(t *testing.T) {
 	}
 }
 
-func TestNewSqlite3Handler(t *testing.T) {
-	for _, tc := range NewSqlite3HandlerTestCases {
+func TestNewSqliteHandler(t *testing.T) {
+	for _, tc := range NewSqliteHandlerTestCases {
 		t.Run(tc.Name, func(t *testing.T) {
-			// Call the NewSqlite3Handler function
-			handler, err := NewSqlite3Handler(tc.DbFile)
+			// Call the NewSqliteHandler function
+			handler, err := NewSqliteHandler(tc.DbFile)
 
 			// Validate error outcome
 			assert.Equal(t, tc.WantErr, err != nil, "unexpected error: got %v, want error: %v", err, tc.WantErr)

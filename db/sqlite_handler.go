@@ -14,12 +14,12 @@ const (
 	fetchTransactionsQuery = "SELECT t.transaction_pk, t.name, t.amount, c.name AS category_name, t.date_created FROM transactions t JOIN categories c ON t.category_fk = c.category_pk WHERE t.date_created >= ?"
 )
 
-type Sqlite3Handler struct {
+type SqliteHandler struct {
 	db *sql.DB
 }
 
-// NewSqlite3Handler initializes the database connection
-func NewSqlite3Handler(dbFile string) (*Sqlite3Handler, error) {
+// NewSqliteHandler initializes the database connection
+func NewSqliteHandler(dbFile string) (*SqliteHandler, error) {
 
 	if _, err := os.Stat(dbFile); dbFile != ":memory:" && err != nil {
 		if os.IsNotExist(err) {
@@ -30,11 +30,11 @@ func NewSqlite3Handler(dbFile string) (*Sqlite3Handler, error) {
 
 	db, _ := sql.Open("sqlite3", dbFile)
 
-	return &Sqlite3Handler{db: db}, nil
+	return &SqliteHandler{db: db}, nil
 }
 
 // FetchTransactionsStr retrieves transactions by converting a date string to time.Time
-func (h *Sqlite3Handler) FetchTransactionsStr(dateFilter string) ([]models.Transaction, error) {
+func (h *SqliteHandler) FetchTransactionsStr(dateFilter string) ([]models.Transaction, error) {
 	parsedDate, err := parseDate(dateFilter)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse dateFilter (%s): %w", dateFilter, err)
@@ -52,7 +52,7 @@ func parseDate(dateStr string) (int64, error) {
 }
 
 // FetchTransactions retrieves transactions filtered by date
-func (h *Sqlite3Handler) FetchTransactions(dateFilter int64) ([]models.Transaction, error) {
+func (h *SqliteHandler) FetchTransactions(dateFilter int64) ([]models.Transaction, error) {
 	rows, err := h.db.Query(fetchTransactionsQuery, dateFilter)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query TRANSACTIONS table: %w", err)

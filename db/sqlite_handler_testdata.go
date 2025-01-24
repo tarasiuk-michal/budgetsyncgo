@@ -77,15 +77,15 @@ var FetchTransactionsTestCases = []FetchTransactionsTestCase{
 	},
 }
 
-// NewSqlite3HandlerTestCase Structure to hold each test case for NewSqlite3Handler
-type NewSqlite3HandlerTestCase struct {
+// NewSqliteHandlerTestCase Structure to hold each test case for NewSqliteHandler
+type NewSqliteHandlerTestCase struct {
 	Name    string
 	DbFile  string
 	WantErr bool
 }
 
-// NewSqlite3HandlerTestCases Test cases for NewSqlite3Handler
-var NewSqlite3HandlerTestCases = []NewSqlite3HandlerTestCase{
+// NewSqliteHandlerTestCases Test cases for NewSqliteHandler
+var NewSqliteHandlerTestCases = []NewSqliteHandlerTestCase{
 	{
 		"Valid in-memory database",
 		":memory:",

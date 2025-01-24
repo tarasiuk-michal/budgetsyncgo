@@ -7,7 +7,7 @@
         <kind value="DIRECTORY"/>
         <package value="budgetsyncgo/..."/>
         <directory value="$PROJECT_DIR$"/>
-        <filePath value="$PROJECT_DIR$/db/sqlite3_handler_test.go"/>
+        <filePath value="$PROJECT_DIR$/db/sqlite_handler_test.go"/>
         <output_directory value="$PROJECT_DIR$"/>
         <framework value="gotest"/>
         <method v="2"/>
