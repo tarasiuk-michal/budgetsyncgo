@@ -3,7 +3,6 @@ package db
 import (
 	"budgetsyncgo/models"
 	"database/sql"
-	"errors"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3" // SQLite driver
 	"log"
@@ -12,7 +11,6 @@ import (
 )
 
 const (
-	//fetchTransactionsQuery = "SELECT id, description, amount, category, date FROM transactions WHERE date >= ?"
 	fetchTransactionsQuery = "SELECT t.transaction_pk, t.name, t.amount, c.name AS category_name, t.date_created FROM transactions t JOIN categories c ON t.category_fk = c.category_pk WHERE t.date_created >= ?"
 )
 
@@ -35,14 +33,29 @@ func NewSqlite3Handler(dbFile string) (*Sqlite3Handler, error) {
 	return &Sqlite3Handler{db: db}, nil
 }
 
-// FetchTransactions retrieves transactions filtered by date
-func (h *Sqlite3Handler) FetchTransactions(dateFilter time.Time) ([]models.Transaction, error) {
-	if dateFilter.IsZero() {
-		return nil, errors.New("dateFilter cannot be zero")
-	}
-	rows, err := h.db.Query(fetchTransactionsQuery, dateFilter.Format(time.DateOnly))
+// FetchTransactionsStr retrieves transactions by converting a date string to time.Time
+func (h *Sqlite3Handler) FetchTransactionsStr(dateFilter string) ([]models.Transaction, error) {
+	parsedDate, err := parseDate(dateFilter)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse dateFilter (%s): %w", dateFilter, err)
+	}
+	return h.FetchTransactions(parsedDate)
+}
+
+// parseDate is a reusable helper function for parsing a date string into time.Time
+func parseDate(dateStr string) (int64, error) {
+	parsedTime, err := time.Parse(time.DateOnly, dateStr)
+	if err != nil {
+		return 0, fmt.Errorf("failed to parse date (%s): %w", dateStr, err)
+	}
+	return parsedTime.Unix(), nil
+}
+
+// FetchTransactions retrieves transactions filtered by date
+func (h *Sqlite3Handler) FetchTransactions(dateFilter int64) ([]models.Transaction, error) {
+	rows, err := h.db.Query(fetchTransactionsQuery, dateFilter)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query TRANSACTIONS table: %w", err)
 	}
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
@@ -54,17 +67,14 @@ func (h *Sqlite3Handler) FetchTransactions(dateFilter time.Time) ([]models.Trans
 	var transactions []models.Transaction
 	for rows.Next() {
 		var txn models.Transaction
-		var dateStr string // Intermediate storage for the 'date' column
+		var dateCreated int64 // Store Unix timestamp from database
 
-		if err := rows.Scan(&txn.Id, &txn.Description, &txn.Amount, &txn.Category, &dateStr); err != nil {
-			return nil, err
+		if err := rows.Scan(&txn.Id, &txn.Description, &txn.Amount, &txn.Category, &dateCreated); err != nil {
+			return nil, fmt.Errorf("failed to scan row: %w", err)
 		}
 
 		// Parse date string into time.Time
-		txn.Date, err = time.Parse(time.DateOnly, dateStr) // assuming date is formatted as YYYY-MM-DD
-		if err != nil {
-			return nil, err
-		}
+		txn.Date = time.Unix(dateCreated, 0).UTC() // assuming date is formatted as YYYY-MM-DD
 
 		transactions = append(transactions, txn)
 	}

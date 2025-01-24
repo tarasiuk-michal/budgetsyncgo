@@ -1,10 +1,6 @@
 // Package db testdata.go
 package db
 
-import (
-	"time"
-)
-
 // CreateTransactionsTableQuery Mock table creation query
 const CreateTransactionsTableQuery = `
 CREATE TABLE transactions (
@@ -12,7 +8,7 @@ CREATE TABLE transactions (
 	name TEXT,
 	amount REAL,
 	category_fk INTEGER,
-	date_created TEXT
+	date_created INTEGER
 )`
 
 // CreateCategoriesTableQuery Mock table creation query
@@ -25,10 +21,11 @@ CREATE TABLE categories (
 // InsertTransactionsDataQuery Mock table data insertion query
 const InsertTransactionsDataQuery = `
 INSERT INTO transactions (transaction_pk, name, amount, category_fk, date_created) VALUES
-(1, 'Groceries', 50.0, 11, '2023-09-20'),
-(2, 'Rent', 500.0, 22, '2023-10-01'),
-(3, 'Salary', 2000.0, 33, '2023-10-05'),
-(4, 'Thing', 300.0, 44, '2020-10-05 12:00:00')`
+(1, 'Groceries', 50.0, 11, 1695168000), -- 2023-09-20
+(2, 'Rent', 500.0, 22, 1696118400),	-- 2023-10-01
+(3, 'Salary', 2000.0, 33, 1696550400), -- 2023-10-06
+(4, 'Thing', 300.0, 44, 1601899200)	-- 2020-10-05
+`
 
 // InsertCategoriesDataQuery Mock table data insertion query
 const InsertCategoriesDataQuery = `
@@ -41,7 +38,7 @@ INSERT INTO categories (category_pk, name) VALUES
 // FetchTransactionsTestCase Structure to hold each test case for FetchTransactions
 type FetchTransactionsTestCase struct {
 	Name       string
-	DateFilter time.Time
+	DateFilter string
 	WantDesc   []string
 	WantErr    bool
 }
@@ -50,31 +47,31 @@ type FetchTransactionsTestCase struct {
 var FetchTransactionsTestCases = []FetchTransactionsTestCase{
 	{
 		"Fetch all transactions",
-		time.Date(2023, 9, 1, 0, 0, 0, 0, time.UTC),
+		"2023-09-01",
 		[]string{"Groceries", "Rent", "Salary"},
 		false,
 	},
 	{
 		"Filter transactions after October 1st",
-		time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC),
+		"2023-10-01",
 		[]string{"Rent", "Salary"},
 		false,
 	},
 	{
 		"Empty result - no transactions after October 10th",
-		time.Date(2023, 10, 10, 0, 0, 0, 0, time.UTC),
+		"2023-10-10",
 		[]string{},
 		false,
 	},
 	{
 		"Invalid query - invalid date format",
-		time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		"2020-01-01 12:00:00",
 		[]string{},
 		true,
 	},
 	{
 		"Invalid query - invalid date value",
-		time.Time{}, // Invalid zero date
+		"", // Invalid zero date
 		[]string{},
 		true,
 	},
@@ -92,6 +89,11 @@ var NewSqlite3HandlerTestCases = []NewSqlite3HandlerTestCase{
 	{
 		"Valid in-memory database",
 		":memory:",
+		false,
+	},
+	{
+		"Valid database file path",
+		"test_db.sqlite",
 		false,
 	},
 	{
